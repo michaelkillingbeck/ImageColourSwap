@@ -84,19 +84,33 @@ public class ImageHelper
 
     public string CreateOutputImage(string originalFilepath, SortedPixelData sourceData, SortedPixelData palletteData)
     {
-        var pallettePixels = palletteData.PixelData;
-        var imageSize = GetImageSize(originalFilepath);
-
-        sourceData.Update(pallettePixels);
-        sourceData.SortByIndex();
-
-        using(var outputImage = Image.LoadPixelData<Rgba32>(sourceData.PixelData, imageSize.Width, imageSize.Height))
+        try
         {
-            string originalFilename = Path.GetFileName(originalFilepath);
-            string filepath = Path.Combine(_outputLocation, $"output_{originalFilename}");
-            outputImage.SaveAsJpeg(filepath);
+            Console.Out.WriteLine($"Creating final image for: {originalFilepath}");
 
-            return filepath;
+            Console.Out.WriteLine("Getting pallette pixels...");
+            var pallettePixels = palletteData.PixelData;
+            Console.Out.WriteLine("Getting ImageSize Data...");
+            var imageSize = GetImageSize(originalFilepath);
+
+            sourceData.Update(pallettePixels);
+            sourceData.SortByIndex();
+            Console.Out.WriteLine("Updated and Sorted the SourceData...");
+
+            using(var outputImage = Image.LoadPixelData<Rgba32>(sourceData.PixelData, imageSize.Width, imageSize.Height))
+            {
+                string originalFilename = Path.GetFileName(originalFilepath);
+                string filepath = Path.Combine(_outputLocation, $"output_{originalFilename}");
+                outputImage.SaveAsJpeg(filepath);
+
+                return filepath;
+            }
+        }
+        catch(Exception ex)
+        {
+            Console.Error.WriteLine($"Error creating final image for: {originalFilepath}");
+            Console.Error.WriteLine(ex.Message);
+            return String.Empty;
         }
     }
 
