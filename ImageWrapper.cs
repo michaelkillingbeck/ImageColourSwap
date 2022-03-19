@@ -62,12 +62,23 @@ public class ImageHelper
 
     public ImageSize GetImageSize(string filepath)
     {
-        using (var image = Image.Load<Rgba32>(filepath))
-        {
-            int height = image.Height;
-            int width = image.Width;
+        Console.Out.WriteLine($"Retrieving ImageSize Data for: {filepath}");
 
-            return new ImageSize(height, width);
+        try
+        {
+            using (var image = Image.Load<Rgba32>(filepath))
+            {
+                int height = image.Height;
+                int width = image.Width;
+
+                return new ImageSize(height, width);
+            }
+        }
+        catch(Exception ex)
+        {
+            Console.Error.WriteLine($"Image for {filepath} was not loaded correctly.");
+            Console.Error.WriteLine(ex.Message);
+            return new ImageSize(0, 0);
         }
     }
 
