@@ -1,129 +1,80 @@
+using Image_Colour_Swap.Interfaces;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 
 public class ImageHelper
 {
-    private const string _outputLocation = "CreatedImages/";
+    private IImageLoader _imageLoader;
+    private IImageSaver _imageSaver;
+    private IImageData _palletteImage;
+    private IImageData _sourceImage;
+
     public ImageHelper()
     {
+        _imageLoader = new ImageSharpImageLoader();
+        _imageSaver = new AWSS3ImageSaver();
+
+        _palletteImage = new InMemoryImageData("", 0, 0, new byte[1]);
+        _sourceImage = new InMemoryImageData("", 0, 0, new byte[1]);
     }
 
-    public SortedPixelData CreateSortedImage(string filepath)
-    {
-        string filename = $"sorted_{Path.GetFileName(filepath)}";
-
-        using (var image = Image.Load<Rgba32>(filepath))
-        {
-            var pixelData = CreatePixelData(image);
-            var height = image.Height;
-            var width = image.Width;
-
-            var sortedPixels = new SortedPixelData(filename, pixelData);
-
-            using(var outputImage = Image.LoadPixelData<Rgba32>(sortedPixels.PixelData, width, height))
-            {
-                filepath = Path.Combine(_outputLocation, filename);
-                outputImage.SaveAsJpeg(filepath);
-            }
-
-            return sortedPixels;
-        }
-    }
-
-    public string ImportImage(string filepath)
-    {
-        Guid fileId = Guid.NewGuid();
-
-        using (var image = Image.Load<Rgba32>(filepath))
-        {
-            int height = image.Height;
-            int width = image.Width;
-
-            Console.WriteLine($"{filepath}: The height is {height} pixels.");
-            Console.WriteLine($"{filepath}: The width is {width} pixels.");
-
-            string filename = Path.Combine(_outputLocation, (fileId.ToString() + ".jpg"));
-
-            image.SaveAsJpeg(filename);
-
-            return filename;
-        }
-    }    
-
-    private Rgba32[] CreatePixelData(Image<Rgba32> image)
-    {
-        Rgba32[] pixels = new Rgba32[0];
-        pixels = new Rgba32[image.Width * image.Height];
-            image.CopyPixelDataTo(pixels);
-
-        return pixels;
-    }
-
-    public ImageSize GetImageSize(string filepath)
-    {
-        Console.Out.WriteLine($"Retrieving ImageSize Data for: {filepath}");
-
-        try
-        {
-            using (var image = Image.Load<Rgba32>(filepath))
-            {
-                int height = image.Height;
-                int width = image.Width;
-
-                return new ImageSize(height, width);
-            }
-        }
-        catch(Exception ex)
-        {
-            Console.Error.WriteLine($"Image for {filepath} was not loaded correctly.");
-            Console.Error.WriteLine(ex.Message);
-            return new ImageSize(0, 0);
-        }
-    }
-
-    public string CreateOutputImage(string originalFilepath, SortedPixelData sourceData, SortedPixelData palletteData)
+    public async Task CreateOutputImage()
     {
         try
         {
-            Console.Out.WriteLine($"Creating final image for: {originalFilepath}");
-
-            Console.Out.WriteLine("Getting pallette pixels...");
-            var pallettePixels = palletteData.PixelData;
-            Console.Out.WriteLine("Getting ImageSize Data...");
-            var imageSize = GetImageSize(originalFilepath);
-
-            sourceData.Update(pallettePixels);
-            sourceData.SortByIndex();
+            Console.Out.WriteLine($"Creating final image for: {_sourceImage.Filename}");
+            _sourceImage.SortedPixels.Update(_palletteImage.SortedPixels.PixelData);
+            _sourceImage.SortedPixels.SortByIndex();
             Console.Out.WriteLine("Updated and Sorted the SourceData...");
 
-            using(var outputImage = Image.LoadPixelData<Rgba32>(sourceData.PixelData, imageSize.Width, imageSize.Height))
-            {
-                string originalFilename = Path.GetFileName(originalFilepath);
-                string filepath = Path.Combine(_outputLocation, $"output_{originalFilename}");
-                outputImage.SaveAsJpeg(filepath);
-
-                return filepath;
-            }
+            MemoryStream stream = (MemoryStream)_imageLoader.GenerateStream(_sourceImage.SortedPixels.PixelData, _sourceImage);
+            await _imageSaver.SaveAsync($"output_{_sourceImage.Filename}", stream);
         }
         catch(Exception ex)
         {
-            Console.Error.WriteLine($"Error creating final image for: {originalFilepath}");
+            Console.Error.WriteLine($"Error creating final image for: {_sourceImage.Filename}");
             Console.Error.WriteLine(ex.Message);
-            return String.Empty;
         }
     }
 
-    public void Resize(ImageSize imageSize, string filepath)
+    public async Task CreateSortedImages()
     {
-        int height = imageSize.Height;
-        int width = imageSize.Width;
+        var pixelData = _imageLoader.CreatePixelData(_sourceImage);
+        _sourceImage.SortedPixels = new SortedPixelData(pixelData);
+        MemoryStream stream = (MemoryStream)_imageLoader.GenerateStream(_sourceImage.SortedPixels.PixelData, _sourceImage);
+        await _imageSaver.SaveAsync($"sorted_{_sourceImage.Filename}", stream);
 
-        using (var image = Image.Load(filepath))
+        pixelData = _imageLoader.CreatePixelData(_palletteImage);
+        _palletteImage.SortedPixels = new SortedPixelData(pixelData);
+        stream = (MemoryStream)_imageLoader.GenerateStream(_palletteImage.SortedPixels.PixelData, _palletteImage);
+        await _imageSaver.SaveAsync($"sorted_{_palletteImage.Filename}", stream);
+    }    
+
+    public void LoadImages(string sourceImage, string palletteImage)
+    {
+        _sourceImage = _imageLoader.LoadImage(sourceImage);
+        _palletteImage = _imageLoader.LoadImage(palletteImage);
+    }
+
+    public void Resize()
+    {
+        if(_sourceImage.Size.Size < _palletteImage.Size.Size)
         {
-            image.Mutate(img => img.Resize(imageSize.Width, imageSize.Height));
-
-            image.SaveAsJpeg(filepath);
+            _sourceImage = _imageLoader.Resize(_sourceImage, _palletteImage);
         }
+        else
+        {
+            _palletteImage = _imageLoader.Resize(_palletteImage, _sourceImage);
+        }
+    }
+
+    public async Task<bool> SaveImagesAsync()
+    {
+        MemoryStream stream = (MemoryStream)_imageLoader.GenerateStream(_sourceImage);
+        await _imageSaver.SaveAsync(_sourceImage.Filename, stream);
+
+        stream = (MemoryStream)_imageLoader.GenerateStream(_palletteImage);
+        await _imageSaver.SaveAsync(_palletteImage.Filename, stream);
+
+        return true;
     }
 }

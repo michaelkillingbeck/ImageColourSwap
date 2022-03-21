@@ -1,15 +1,10 @@
-using SixLabors.ImageSharp.PixelFormats;
-
 public class SortedPixelData
 {
-    public string Filename { get; set;}
-    public Rgba32[] PixelData => SortedPixels.Select(pixel => pixel.PixelData).ToArray<Rgba32>();
+    public RgbPixelData[] PixelData => SortedPixels.Select(pixel => pixel.PixelData).ToArray<RgbPixelData>();
     public IndexedPixelData[] SortedPixels { get; set; }
 
-    public SortedPixelData(string filename, Rgba32[] sortedPixels)
+    public SortedPixelData(RgbPixelData[] sortedPixels)
     {
-        Filename = filename;
-
         SortedPixels = CreateSortedPixels(sortedPixels);
     }
 
@@ -19,7 +14,7 @@ public class SortedPixelData
         SortedPixels = sortedArray;
     }
 
-    public void Update(Rgba32[] incomingPixels)
+    public void Update(RgbPixelData[] incomingPixels)
     {
         for(int index = 0; index < SortedPixels.Length; index++)
         {
@@ -27,8 +22,13 @@ public class SortedPixelData
         }
     }
 
-    private IndexedPixelData[] CreateSortedPixels(Rgba32[] pixels)
+    private IndexedPixelData[] CreateSortedPixels(RgbPixelData[] pixels)
     {
+        if(pixels.Any() == false)
+        {
+            return new IndexedPixelData[0];
+        }
+        
         var tempArray = new IndexedPixelData[pixels.Length];
 
         for(int index = 0; index < pixels.Length; index++)
