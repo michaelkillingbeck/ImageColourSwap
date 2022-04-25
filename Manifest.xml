@@ -1,0 +1,5 @@
+<StoreArtifacts>
+    <Package Id="AWSSDK.Core" Version="3.7.9" />
+    <Package Id="AWSSDK.S3" Version="3.7.8.10" />
+    <Package Id="SixLabors.ImageSharp" Version="2.0.0" />
+</StoreArtifacts>

@@ -1,5 +1,4 @@
 using Image_Colour_Swap.Interfaces;
-using SixLabors.ImageSharp;
 
 public class ImageHelper
 {
@@ -17,7 +16,7 @@ public class ImageHelper
         _sourceImage = new InMemoryImageData("", 0, 0, new byte[1]);
     }
 
-    public async Task CreateOutputImage()
+    public async Task<string> CreateOutputImage()
     {
         try
         {
@@ -28,11 +27,12 @@ public class ImageHelper
 
             MemoryStream stream = (MemoryStream)_imageLoader.GenerateStream(_sourceImage.SortedPixels.PixelData, _sourceImage);
             await _imageSaver.SaveAsync($"output_{_sourceImage.Filename}", stream);
+
+            return _sourceImage.Filename;
         }
-        catch(Exception ex)
+        catch(Exception)
         {
-            Console.Error.WriteLine($"Error creating final image for: {_sourceImage.Filename}");
-            Console.Error.WriteLine(ex.Message);
+            return string.Empty;
         }
     }
 
