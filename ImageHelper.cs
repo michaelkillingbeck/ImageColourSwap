@@ -7,9 +7,9 @@ public class ImageHelper
     private IImageData _palletteImage;
     private IImageData _sourceImage;
 
-    public ImageHelper()
+    public ImageHelper(IImageLoader imageLoader)
     {
-        _imageLoader = new ImageSharpImageLoader();
+        _imageLoader = imageLoader;
         _imageSaver = new AWSS3ImageSaver();
 
         _palletteImage = new InMemoryImageData("", 0, 0, new byte[1]);
