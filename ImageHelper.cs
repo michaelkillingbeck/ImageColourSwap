@@ -21,14 +21,21 @@ public class ImageHelper
         try
         {
             Console.Out.WriteLine($"Creating final image for: {_sourceImage.Filename}");
+
             _sourceImage.SortedPixels.Update(_palletteImage.SortedPixels.PixelData);
+            Console.Out.WriteLine($"Updated PixelData for: {_sourceImage.Filename}");
+
+            _palletteImage = new InMemoryImageData("", 0, 0, new byte[1]);
+            Console.Out.WriteLine($"Wiped Pallette Image");
+
             _sourceImage.SortedPixels.SortByIndex();
             Console.Out.WriteLine("Updated and Sorted the SourceData...");
 
             MemoryStream stream = (MemoryStream)_imageLoader.GenerateStream(_sourceImage.SortedPixels.PixelData, _sourceImage);
-            await _imageSaver.SaveAsync($"output_{_sourceImage.Filename}", stream);
+            var outputFileName = $"output_{_sourceImage.Filename}";
+            await _imageSaver.SaveAsync(outputFileName, stream);
 
-            return _sourceImage.Filename;
+            return outputFileName;
         }
         catch(Exception)
         {
@@ -40,13 +47,18 @@ public class ImageHelper
     {
         var pixelData = _imageLoader.CreatePixelData(_sourceImage);
         _sourceImage.SortedPixels = new SortedPixelData(pixelData);
-        MemoryStream stream = (MemoryStream)_imageLoader.GenerateStream(_sourceImage.SortedPixels.PixelData, _sourceImage);
-        await _imageSaver.SaveAsync($"sorted_{_sourceImage.Filename}", stream);
+
+        using(MemoryStream stream = (MemoryStream)_imageLoader.GenerateStream(_sourceImage.SortedPixels.PixelData, _sourceImage))
+        {
+            await _imageSaver.SaveAsync($"sorted_{_sourceImage.Filename}", stream);
+        }
 
         pixelData = _imageLoader.CreatePixelData(_palletteImage);
         _palletteImage.SortedPixels = new SortedPixelData(pixelData);
-        stream = (MemoryStream)_imageLoader.GenerateStream(_palletteImage.SortedPixels.PixelData, _palletteImage);
-        await _imageSaver.SaveAsync($"sorted_{_palletteImage.Filename}", stream);
+        using(MemoryStream stream = (MemoryStream)_imageLoader.GenerateStream(_palletteImage.SortedPixels.PixelData, _palletteImage))
+        {
+            await _imageSaver.SaveAsync($"sorted_{_palletteImage.Filename}", stream);
+        }
     }    
 
     public void LoadImages(string sourceImage, string palletteImage)
