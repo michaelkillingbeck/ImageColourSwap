@@ -25,9 +25,6 @@ public class ImageHelper
             _sourceImage.SortedPixels.Update(_palletteImage.SortedPixels.PixelData);
             Console.Out.WriteLine($"Updated PixelData for: {_sourceImage.Filename}");
 
-            _palletteImage = new InMemoryImageData("", 0, 0, new byte[1]);
-            Console.Out.WriteLine($"Wiped Pallette Image");
-
             _sourceImage.SortedPixels.SortByIndex();
             Console.Out.WriteLine("Updated and Sorted the SourceData...");
 
@@ -60,6 +57,11 @@ public class ImageHelper
             await _imageSaver.SaveAsync($"sorted_{_palletteImage.Filename}", stream);
         }
     }    
+
+    public Tuple<string, string> GetSourceAndPalletteImageFilenames()
+    {
+        return new (_sourceImage.Filename, _palletteImage.Filename);
+    }
 
     public void LoadImages(string sourceImage, string palletteImage)
     {
