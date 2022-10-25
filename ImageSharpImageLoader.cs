@@ -44,6 +44,22 @@ public class ImageSharpImageLoader : IImageLoader
         }
     }
 
+    public Stream GenerateStream(string base64EncodedString)
+    {
+        base64EncodedString = base64EncodedString.Substring(23);
+
+        var stream = new MemoryStream();
+
+        byte[] imageBytes = Convert.FromBase64String(base64EncodedString);
+
+        using (var image = Image.Load(imageBytes))
+        {
+            image.Save(stream, new JpegEncoder());
+        }
+
+        return stream;
+    }
+
     public IImageData LoadImage(string filepath)
     {
         Guid fileId = Guid.NewGuid();
