@@ -76,6 +76,23 @@ public class ImageSharpImageLoader : IImageLoader
         }
     }
 
+    public IImageData LoadImageFromBase64EncodedString(string base64EncodedString)
+    {
+        base64EncodedString = base64EncodedString.Substring(23);
+
+        var stream = new MemoryStream();
+
+        byte[] imageBytes = Convert.FromBase64String(base64EncodedString);
+
+        using (var image = Image.Load<Rgba32>(imageBytes))
+        {
+            var byteArray = new byte[image.Width * image.Height * 4];
+            image.CopyPixelDataTo(byteArray);
+
+            return new InMemoryImageData($"{Guid.NewGuid().ToString()}.jpg", image.Width, image.Height, byteArray);
+        }
+    }
+
     public IImageData Resize(IImageData sourceImage, IImageData targetImage)
     {
         using(var image = 

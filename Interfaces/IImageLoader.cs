@@ -7,5 +7,6 @@ public interface IImageLoader
     Stream GenerateStream(RgbPixelData[] pixels, IImageData imageData);
     Stream GenerateStream(string base64EncodedString);
     IImageData LoadImage(string filepath);
+    IImageData LoadImageFromBase64EncodedString(string base64EncodedString);
     IImageData Resize(IImageData sourceImage, IImageData targetImage);
 }
