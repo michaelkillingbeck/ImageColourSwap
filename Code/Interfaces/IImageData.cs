@@ -1,4 +1,6 @@
-namespace Image_Colour_Swap.Interfaces;
+using ImageHelpers.Models;
+
+namespace ImageHelpers.Interfaces;
 
 public interface IImageData
 {

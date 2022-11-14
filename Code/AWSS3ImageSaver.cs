@@ -2,7 +2,7 @@ using System.Net;
 using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
-using Image_Colour_Swap.Interfaces;
+using ImageHelpers.Interfaces;
 
 public class AWSS3ImageSaver : IImageSaver
 {

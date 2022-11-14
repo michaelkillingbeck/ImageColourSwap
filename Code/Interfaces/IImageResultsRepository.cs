@@ -1,4 +1,4 @@
-namespace Image_Colour_Swap.Interfaces;
+namespace ImageHelpers.Interfaces;
 
 public interface IImageResultsRepository<T>
 {

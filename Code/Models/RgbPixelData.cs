@@ -1,3 +1,5 @@
+namespace ImageHelpers.Models;
+
 public class RgbPixelData
 {
     public byte B { get; set; }

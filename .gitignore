@@ -1,6 +1,6 @@
+.DS_Store
 .vscode/
-bin/
+Code/bin/
+Code/obj/
 CreatedImages/
 Images/
-obj/
-.DS_Store

@@ -1,10 +1,13 @@
-using Image_Colour_Swap.Interfaces;
+using ImageHelpers.Interfaces;
+using ImageHelpers.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
-public class ImageSharpImageLoader : IImageLoader
+namespace ImageHelpers.Services.ImageSharp;
+
+public class ImageSharpImageHandler : IImageHandler
 {
     public RgbPixelData[] CreatePixelData(IImageData imageData)
     {

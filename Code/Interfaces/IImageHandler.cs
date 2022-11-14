@@ -1,6 +1,8 @@
-namespace Image_Colour_Swap.Interfaces;
+using ImageHelpers.Models;
 
-public interface IImageLoader
+namespace ImageHelpers.Interfaces;
+
+public interface IImageHandler
 {
     RgbPixelData[] CreatePixelData(IImageData imageData);
     Stream GenerateStream(IImageData imageData);

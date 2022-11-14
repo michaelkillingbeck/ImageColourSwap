@@ -1,3 +1,5 @@
+namespace ImageHelpers.Models;
+
 public class IndexedPixelData
 {
     public int Index { get; set; }

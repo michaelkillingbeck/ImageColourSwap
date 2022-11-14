@@ -1,3 +1,5 @@
+namespace ImageHelpers.Models;
+
 public class SortedPixelData
 {
     public RgbPixelData[] PixelData => SortedPixels.Select(pixel => pixel.PixelData).ToArray<RgbPixelData>();

@@ -3,9 +3,9 @@
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PackageId>ImageColourSwap</PackageId>
+    <PackageId>ImageHelpers</PackageId>
     <OutputType>Library</OutputType>
-    <RootNamespace>Image_Colour_Swap</RootNamespace>
+    <RootNamespace>ImageHelpers</RootNamespace>
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 

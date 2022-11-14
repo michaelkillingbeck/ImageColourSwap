@@ -1,4 +1,6 @@
-using Image_Colour_Swap.Interfaces;
+namespace ImageHelpers.Models;
+
+using ImageHelpers.Interfaces;
 
 public class InMemoryImageData : IImageData
 {
