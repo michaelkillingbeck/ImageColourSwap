@@ -1,7 +1,7 @@
 version: 0.2
 
 env:
-  paramter-store:
+  parameter-store:
     LOG_GROUP:  /ICS/Logging/LogGroup
 
 phases:
