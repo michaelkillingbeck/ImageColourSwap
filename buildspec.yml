@@ -12,7 +12,6 @@ phases:
     runtime-versions:
       dotnet: latest
     commands:
-      - echo $LOG_GROUP
       - export PATH="$PATH:/root/.dotnet/tools"
       - dotnet tool install -g AWS.CodeArtifact.NuGet.CredentialProvider
       - dotnet codeartifact-creds install
