@@ -5,7 +5,6 @@ env:
     CODE_ARTIFACT_DOMAIN: /CodeBuild/CodeArtifact/Domain
     CODE_ARTIFACT_DOMAIN_OWNER: /CodeBuild/CodeArtifact/DomainOwner
     CODE_ARTIFACT_REPOSITORY: /CodeBuild/CodeArtifact/Repository
-    LOG_GROUP:  /ICS/Logging/LogGroup
 
 phases:
   install:
