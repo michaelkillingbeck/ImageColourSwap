@@ -5,8 +5,8 @@ namespace ImageHelpers.Services.ImageColourSwap;
 
 public class ImageColourSwapImageHelper
 {
-    private IImageHandler _imageHandler;
-    private IImageSaver _imageSaver;
+    readonly IImageHandler _imageHandler;
+    readonly IImageSaver _imageSaver;
     private IImageData _palletteImage;
     private IImageData _sourceImage;
 
@@ -29,7 +29,7 @@ public class ImageColourSwapImageHelper
             _sourceImage.SortedPixels.SortByIndex();
 
             MemoryStream stream = (MemoryStream)_imageHandler.GenerateStream(_sourceImage.SortedPixels.PixelData, _sourceImage);
-            var outputFileName = $"output_{_sourceImage.Filename}";
+            string outputFileName = $"output_{_sourceImage.Filename}";
             await _imageSaver.SaveAsync(outputFileName, stream);
 
             return outputFileName;
@@ -42,7 +42,7 @@ public class ImageColourSwapImageHelper
 
     public async Task CreateSortedImages()
     {
-        var pixelData = _imageHandler.CreatePixelData(_sourceImage);
+        RgbPixelData[] pixelData = _imageHandler.CreatePixelData(_sourceImage);
         _sourceImage.SortedPixels = new SortedPixelData(pixelData);
 
         using(MemoryStream stream = (MemoryStream)_imageHandler.GenerateStream(_sourceImage.SortedPixels.PixelData, _sourceImage))

@@ -27,4 +27,4 @@ phases:
     commands:
       - cd Code
       - dotnet pack -o .
-      - dotnet nuget push *.nupkg -s codeartifact 
+      - dotnet nuget push *.nupkg -s codeartifact --skip-duplicate
