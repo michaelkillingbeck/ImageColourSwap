@@ -39,7 +39,7 @@ public class ImageSharpImageHandler : IImageHandler
 
     public Stream GenerateStream(RgbPixelData[] pixels, IImageData imageData)
     {
-        Rgba32[] imageSharpPixels = pixels.Select(pixel =>
+        ReadOnlySpan<Rgba32> imageSharpPixels = pixels.Select(pixel =>
             new Rgba32
             {
                 R = pixel.R,
@@ -48,7 +48,8 @@ public class ImageSharpImageHandler : IImageHandler
                 A = 255,
             }).ToArray();
 
-        using Image<Rgba32> image = Image.LoadPixelData(imageSharpPixels, imageData.Size.Width, imageData.Size.Height);
+        using Image<Rgba32> image =
+            Image.LoadPixelData(imageSharpPixels, imageData.Size.Width, imageData.Size.Height);
         MemoryStream stream = new();
         image.Save(stream, new JpegEncoder());
 
