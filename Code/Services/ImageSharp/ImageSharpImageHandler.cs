@@ -11,25 +11,25 @@ public class ImageSharpImageHandler : IImageHandler
 {
     public RgbPixelData[] CreatePixelData(IImageData imageData)
     {
-        using Image<Rgba32> image = 
+        using Image<Rgba32> image =
             Image.LoadPixelData<Rgba32>(imageData.Bytes, imageData.Size.Width, imageData.Size.Height);
 
         Rgba32[] pixels = new Rgba32[image.Width * image.Height];
         image.CopyPixelDataTo(pixels);
 
-        return pixels.Select(pixel => 
-            new RgbPixelData 
-            { 
-                R = pixel.R, 
-                G = pixel.G, 
-                B = pixel.B 
+        return pixels.Select(pixel =>
+            new RgbPixelData
+            {
+                R = pixel.R,
+                G = pixel.G,
+                B = pixel.B,
             }).ToArray();
     }
 
-    public Stream GenerateStream(IImageData sourceImage)
+    public Stream GenerateStream(IImageData imageData)
     {
-        using Image<Rgba32> image = 
-            Image.LoadPixelData<Rgba32>(sourceImage.Bytes, sourceImage.Size.Width, sourceImage.Size.Height);
+        using Image<Rgba32> image =
+            Image.LoadPixelData<Rgba32>(imageData.Bytes, imageData.Size.Width, imageData.Size.Height);
 
         MemoryStream stream = new();
         image.Save(stream, new JpegEncoder());
@@ -39,13 +39,13 @@ public class ImageSharpImageHandler : IImageHandler
 
     public Stream GenerateStream(RgbPixelData[] pixels, IImageData imageData)
     {
-        Rgba32[] imageSharpPixels = pixels.Select(pixel => 
-            new Rgba32 
-            { 
-                R = pixel.R, 
-                G = pixel.G, 
-                B = pixel.B, 
-                A = 255 
+        Rgba32[] imageSharpPixels = pixels.Select(pixel =>
+            new Rgba32
+            {
+                R = pixel.R,
+                G = pixel.G,
+                B = pixel.B,
+                A = 255,
             }).ToArray();
 
         using Image<Rgba32> image = Image.LoadPixelData(imageSharpPixels, imageData.Size.Width, imageData.Size.Height);
@@ -79,11 +79,10 @@ public class ImageSharpImageHandler : IImageHandler
         image.CopyPixelDataTo(byteArray);
 
         return new InMemoryImageData(
-            $"{Guid.NewGuid()}.jpg", 
-            image.Width, 
-            image.Height, 
-            byteArray
-        );
+            $"{Guid.NewGuid()}.jpg",
+            image.Width,
+            image.Height,
+            byteArray);
     }
 
     public IImageData LoadImageFromBase64EncodedString(string base64EncodedString)
@@ -97,11 +96,10 @@ public class ImageSharpImageHandler : IImageHandler
         image.CopyPixelDataTo(byteArray);
 
         return new InMemoryImageData(
-            $"{Guid.NewGuid()}.jpg", 
-            image.Width, 
-            image.Height, 
-            byteArray
-        );
+            $"{Guid.NewGuid()}.jpg",
+            image.Width,
+            image.Height,
+            byteArray);
     }
 
     public IImageData Resize(IImageData sourceImage, IImageData targetImage)
@@ -114,10 +112,9 @@ public class ImageSharpImageHandler : IImageHandler
         image.CopyPixelDataTo(byteArray);
 
         return new InMemoryImageData(
-            sourceImage.Filename, 
-            image.Width, 
-            image.Height, 
-            byteArray
-        );
+            sourceImage.Filename,
+            image.Width,
+            image.Height,
+            byteArray);
     }
 }

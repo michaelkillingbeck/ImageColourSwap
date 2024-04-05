@@ -1,27 +1,27 @@
-namespace ImageHelpers.Models;
-
 using ImageHelpers.Interfaces;
+
+namespace ImageHelpers.Models;
 
 public class InMemoryImageData : IImageData
 {
-    private byte[] _bytes;
-    private string _filename = "";
-    private int _height;
-    private int _width;
+    private readonly int _height;
+    private readonly int _width;
 
-    public byte[] Bytes => _bytes;
-    public string Filename => _filename;
-    public ImageSize Size => new ImageSize(_height, _width);
+    public byte[] Bytes { get; }
+
+    public string Filename { get; }
+
+    public ImageSize Size => new(_height, _width);
 
     public SortedPixelData SortedPixels { get; set; }
 
     public InMemoryImageData(string filename, int width, int height, byte[] bytes)
     {
-        _bytes = bytes;
-        _filename = filename;
+        Bytes = bytes;
+        Filename = filename;
         _height = height;
         _width = width;
 
-        SortedPixels = new SortedPixelData(new RgbPixelData[0]);
+        SortedPixels = new SortedPixelData(Array.Empty<RgbPixelData>());
     }
 }
