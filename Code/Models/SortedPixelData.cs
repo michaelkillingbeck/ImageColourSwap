@@ -1,13 +1,8 @@
 namespace ImageHelpers.Models;
 
-public class SortedPixelData
+public class SortedPixelData(RgbPixelData[] sortedPixels)
 {
-    public IndexedPixelData[] SortedPixels { get; set; }
-
-    public SortedPixelData(RgbPixelData[] sortedPixels)
-    {
-        SortedPixels = CreateSortedPixels(sortedPixels);
-    }
+    public IndexedPixelData[] SortedPixels { get; set; } = CreateSortedPixels(sortedPixels);
 
     public RgbPixelData[] GetPixelData()
     {
@@ -16,7 +11,7 @@ public class SortedPixelData
 
     public void SortByIndex()
     {
-        IndexedPixelData[] sortedArray = SortedPixels.OrderBy(pixel => pixel.Index).ToArray();
+        IndexedPixelData[] sortedArray = [.. SortedPixels.OrderBy(pixel => pixel.Index)];
         SortedPixels = sortedArray;
     }
 
@@ -30,9 +25,9 @@ public class SortedPixelData
 
     private static IndexedPixelData[] CreateSortedPixels(RgbPixelData[] pixels)
     {
-        if (!pixels.Any())
+        if (pixels.Length == 0)
         {
-            return Array.Empty<IndexedPixelData>();
+            return [];
         }
 
         IndexedPixelData[] tempArray = new IndexedPixelData[pixels.Length];
@@ -42,10 +37,10 @@ public class SortedPixelData
             tempArray[index] = new IndexedPixelData(index, pixels[index]);
         }
 
-        IndexedPixelData[] sortedArray = tempArray.OrderBy(indexedPixel => indexedPixel.PixelData.R)
-            .ThenBy(indexedPixel => indexedPixel.PixelData.G)
-            .ThenBy(indexedPixel => indexedPixel.PixelData.B)
-            .ToArray();
+        IndexedPixelData[] sortedArray = [..
+            tempArray.OrderBy(indexedPixel => indexedPixel.PixelData.R)
+                .ThenBy(indexedPixel => indexedPixel.PixelData.G)
+                .ThenBy(indexedPixel => indexedPixel.PixelData.B)];
 
         return sortedArray;
     }
